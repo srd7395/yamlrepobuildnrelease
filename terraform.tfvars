@@ -1,3 +1,3 @@
-rgname = "yamlrg"
-loc = "Australia East"
-pipname = "yamlpip"
+rgname = "yamlbrrg"
+loc = "West Europe"
+pipname = "yamlbrpip"
