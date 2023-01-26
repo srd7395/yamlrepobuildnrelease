@@ -10,14 +10,49 @@ pool:
 name: Default
 
 steps:
--task:
+
 - task: CopyFiles@2
+  displayName: Copy files
   inputs:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
--task:
+
 - task: PublishBuildArtifacts@1
+  displayName: Publish Artifacts
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+- task: DownloadBuildArtifacts@1
+  displayName: Download Artifacts
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'drop'
+    downloadPath: '$(System.ArtifactsDirectory)'
+- task: TerraformInstaller@0
+  displayName: Terraform installer
+  inputs:
+    terraformVersion: 'latest'
+- task: TerraformTaskV3@3
+  displayName: Terraform init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'AzureConnection'
+    backendAzureRmResourceGroupName: 'Pipelinerg'
+    backendAzureRmStorageAccountName: 'pipelinstorage2246'
+    backendAzureRmContainerName: 'pipelinecontainer2'
+    backendAzureRmKey: 'buildreleyaml.tfstate'
+- task: TerraformTaskV3@3
+  displayName: Terraform plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'AzureConnection'
+- task: TerraformTaskV3@3
+  displayName: Terraform apply
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'AzureConnection'
